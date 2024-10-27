@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      MONGO_URI: mongodb://mongo:27017/notes
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+  mongo:
+    image: mongo:4.4
+    networks:
+      - app-network
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
